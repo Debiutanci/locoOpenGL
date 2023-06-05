@@ -415,8 +415,9 @@ int main(void)
 		fprintf(stderr, "Nie można zainicjować GLFW.\n");
 		exit(EXIT_FAILURE);
 	}
-	//Models::object = Models::Object("./model/cube.obj"); // walec
-	//Models::cubexd = Models::Object("./model/cube.obj"); // walec
+	Models::belka = Models::Object("./model/belka.obj"); // walec
+	Models::walec = Models::Object("./model/walec2.obj"); // walec
+	Models::kolo2 = Models::Object("./model/kolo2.obj"); // walec
 	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program

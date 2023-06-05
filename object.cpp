@@ -180,7 +180,7 @@ namespace Models {
 	}
 
 	void Object::drawSolid(ShaderProgram *sp, string fn) {
-		init(fn);
+		//init(fn);
 
 		glEnableVertexAttribArray(sp->a("vertex"));
 		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, vertices);
