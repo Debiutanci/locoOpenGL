@@ -406,9 +406,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	// TO DZIAŁA END
 
 	// TORY
-	// glm poziom, wysokość(pion)
-	//  glm::vec3(5.55f, 0.5f, 0.0f))
-
 	for (int i=0; i<15; i++) {
 		glm::mat4 trackMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(7.0f -i * 0.95f, -1.15f, -0.15f));
 		trackMatrix = glm::rotate(trackMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.50f, 0.0f));
