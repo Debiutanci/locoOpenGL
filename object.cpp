@@ -13,7 +13,8 @@ namespace Models {
 	Object object;
 	Object walec;
 	Object belka;
-	Object kolo2;
+	Object kolo3;
+	Object tory;
 
 	Object::Object() {
 		//init("./model/cube.obj");

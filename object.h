@@ -38,7 +38,8 @@ namespace Models {
 	extern Object object;
 	extern Object walec;
 	extern Object belka;
-	extern Object kolo2;
+	extern Object kolo3;
+	extern Object tory;
 
 }
 

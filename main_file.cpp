@@ -112,28 +112,28 @@ void createWheelWithSpokes(const glm::mat4& wheelMatrix, float wheelAngle, float
 	glm::mat4 scaledWheelMatrix = glm::scale(wheelMatrix, glm::vec3(size));
 
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(scaledWheelMatrix));
-	carWheel.drawSolid();
+	Models::kolo3.drawSolid(spLambert, "./model/kolo3.obj");
 
 	glm::mat4 spokeMatrix1 = wheelMatrix;
 	spokeMatrix1 = glm::rotate(spokeMatrix1, PI / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	spokeMatrix1 = glm::scale(spokeMatrix1, glm::vec3(size * 0.02f, size * 0.02f, size * 0.3f));
 	spokeMatrix1 = glm::translate(spokeMatrix1, glm::vec3(0.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(spokeMatrix1));
-	Models::cube.drawSolid();
+	//Models::cube.drawSolid();
 
 	glm::mat4 spokeMatrix2 = wheelMatrix;
 	spokeMatrix2 = glm::rotate(spokeMatrix2, PI / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	spokeMatrix2 = glm::scale(spokeMatrix2, glm::vec3(size * 0.02f, size * 0.02f, size * 0.3f));
 	spokeMatrix2 = glm::translate(spokeMatrix2, glm::vec3(0.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(spokeMatrix2));
-	Models::cube.drawSolid();
+	//Models::cube.drawSolid();
 
 	glm::mat4 spokeMatrix3 = wheelMatrix;
 	spokeMatrix3 = glm::rotate(spokeMatrix3, PI / 1.37f, glm::vec3(0.0f, 1.0f, 1.0f)); // TODO
 	spokeMatrix3 = glm::scale(spokeMatrix3, glm::vec3(size * 0.02f, size * 0.02f, size * 0.3f));
 	spokeMatrix3 = glm::translate(spokeMatrix3, glm::vec3(0.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(spokeMatrix3));
-	Models::cube.drawSolid();
+	//Models::cube.drawSolid();
 }
 
 void createSmallWheel(const glm::mat4& Ms, const glm::vec3& position, float skret, float wheelAngle, float smallsize)
@@ -231,6 +231,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(walecMatrix));
 	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
+
 	glm::mat4 komin1Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.9f, 0.7f, 0.0f));
 	komin1Matrix = glm::scale(komin1Matrix, glm::vec3(0.7f, 0.7f, 0.7f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(komin1Matrix));
@@ -247,33 +248,37 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 
 	//// Generowanie koła 1 z szprychami
 	glm::mat4 Mk1 = Ms;
-	Mk1 = glm::translate(Mk1, glm::vec3(0.75f, 0.0f, 1.0f));
+	Mk1 = glm::translate(Mk1, glm::vec3(0.85f, 0.05f, 1.0f));
 	Mk1 = glm::rotate(Mk1, skret, glm::vec3(0.0f, 1.0f, 0.0f));
 	Mk1 = glm::rotate(Mk1, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+	Mk1 = glm::scale(Mk1, glm::vec3(1.5f, 1.5f, 1.5f));
 	createWheelWithSpokes(Mk1, wheelAngle, size);
 
 	//// Generowanie koła 2 z szprychami
 	glm::mat4 Mk2 = Ms;
-	Mk2 = glm::translate(Mk2, glm::vec3(0.75f, 0.0f, -1.0f));
+	Mk2 = glm::translate(Mk2, glm::vec3(0.85f, 0.05f, -1.0f));
 	Mk2 = glm::rotate(Mk2, skret, glm::vec3(0.0f, 1.0f, 0.0f));
 	Mk2 = glm::rotate(Mk2, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+	Mk2 = glm::scale(Mk2, glm::vec3(1.5f, 1.5f, 1.5f));
 	createWheelWithSpokes(Mk2, wheelAngle, size);
 
 	////Koło3
 	glm::mat4 Mk3 = Ms;
-	Mk3 = glm::translate(Mk3, glm::vec3(-1.0f, 0.0f, 1.0f));
+	Mk3 = glm::translate(Mk3, glm::vec3(-1.0f, 0.05f, 1.0f));
 	Mk3 = glm::rotate(Mk3, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+	Mk3 = glm::scale(Mk3, glm::vec3(1.5f, 1.5f, 1.5f));
 	createWheelWithSpokes(Mk3, wheelAngle, size);
 
 	////Koło4
 	glm::mat4 Mk4 = Ms;
-	Mk4 = glm::translate(Mk4, glm::vec3(-1.0f, 0.0f, -1.0f));
+	Mk4 = glm::translate(Mk4, glm::vec3(-1.0f, 0.05f, -1.0f));
 	Mk4 = glm::rotate(Mk4, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+	Mk4 = glm::scale(Mk4, glm::vec3(1.5f, 1.5f, 1.5f));
 	createWheelWithSpokes(Mk4, wheelAngle, size);
 
 
 	// small section:
-	float smallsize = 1.1;
+	float smallsize = 1.5;
 
 	glm::vec3 positions[] = {
 		glm::vec3(2.4f, -0.4f, 1.0f),
@@ -400,6 +405,20 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 	// TO DZIAŁA END
 
+	// TORY
+	// glm poziom, wysokość(pion)
+	//  glm::vec3(5.55f, 0.5f, 0.0f))
+
+	for (int i=0; i<15; i++) {
+		glm::mat4 trackMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(7.0f -i * 0.95f, -1.15f, -0.15f));
+		trackMatrix = glm::rotate(trackMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.50f, 0.0f));
+		trackMatrix = glm::scale(trackMatrix, glm::vec3(1.3f, 1.0f, 1.0f));
+		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(trackMatrix));
+		Models::tory.drawSolid(spLambert, "./model/trainTrack2.obj");
+	}
+	
+
+
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
 	glfwSwapBuffers(window);
 }
@@ -417,7 +436,8 @@ int main(void)
 	}
 	Models::belka = Models::Object("./model/belka.obj"); // walec
 	Models::walec = Models::Object("./model/walec2.obj"); // walec
-	Models::kolo2 = Models::Object("./model/kolo2.obj"); // walec
+	Models::kolo3 = Models::Object("./model/kolo3.obj"); // walec
+	Models::tory = Models::Object("./model/trainTrack2.obj"); // walec
 	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
