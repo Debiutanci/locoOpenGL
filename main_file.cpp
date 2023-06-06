@@ -156,7 +156,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	Models::object.drawSolid(spLambert, "./model/cube.obj");
 
 	// Rysowanie podwozia
-	glm::mat4 Mp = glm::scale(Ms, glm::vec3(1.5f, 0.125f, 1.0f));
+	glm::mat4 Mp = glm::scale(Ms, glm::vec3(2.5f, 0.125f, 1.0f));
 	glUniform4f(spLambert->u("color"), 1, 1, 1, 1);
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp));
 	Models::cube.drawSolid();
@@ -201,12 +201,12 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(poleMatrix));
 		Models::cube.drawSolid();
 	}
-	// DUZE
 
+	// DUZE
 	glm::mat4 walecMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.55f, 0.5f, 0.0f));
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.5f, 1.0f, 1.5f));
+	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.8f, 1.0f, 1.8f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(walecMatrix));
 	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
@@ -221,39 +221,26 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(komin2Matrix));
 	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
-	//Models::kolo2.drawSolid(spLambert, "./model/kolo2.obj");
-
 	float size = 2.2;
 
-	//// Generowanie koła 1 z szprychami
-	glm::mat4 Mk1 = Ms;
-	Mk1 = glm::translate(Mk1, glm::vec3(0.85f, 0.05f, 1.0f));
-	Mk1 = glm::rotate(Mk1, skret, glm::vec3(0.0f, 1.0f, 0.0f));
-	Mk1 = glm::rotate(Mk1, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	Mk1 = glm::scale(Mk1, glm::vec3(1.5f, 1.5f, 1.5f));
-	createWheelWithSpokes(Mk1, wheelAngle, size);
+	// DUZE KOLA
+	glm::vec3 wheelPositions[] = {
+		glm::vec3(1.0f, 0.05f, 1.0f),
+		glm::vec3(-1.0f, 0.05f, 1.0f),
+		glm::vec3(1.0f, 0.05f, -1.0f),
+		glm::vec3(-1.0f, 0.05f, -1.0f),
+	};
 
-	//// Generowanie koła 2 z szprychami
-	glm::mat4 Mk2 = Ms;
-	Mk2 = glm::translate(Mk2, glm::vec3(0.85f, 0.05f, -1.0f));
-	Mk2 = glm::rotate(Mk2, skret, glm::vec3(0.0f, 1.0f, 0.0f));
-	Mk2 = glm::rotate(Mk2, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	Mk2 = glm::scale(Mk2, glm::vec3(1.5f, 1.5f, 1.5f));
-	createWheelWithSpokes(Mk2, wheelAngle, size);
-
-	////Koło3
-	glm::mat4 Mk3 = Ms;
-	Mk3 = glm::translate(Mk3, glm::vec3(-1.0f, 0.05f, 1.0f));
-	Mk3 = glm::rotate(Mk3, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	Mk3 = glm::scale(Mk3, glm::vec3(1.5f, 1.5f, 1.5f));
-	createWheelWithSpokes(Mk3, wheelAngle, size);
-
-	////Koło4
-	glm::mat4 Mk4 = Ms;
-	Mk4 = glm::translate(Mk4, glm::vec3(-1.0f, 0.05f, -1.0f));
-	Mk4 = glm::rotate(Mk4, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	Mk4 = glm::scale(Mk4, glm::vec3(1.5f, 1.5f, 1.5f));
-	createWheelWithSpokes(Mk4, wheelAngle, size);
+	for (int i = 0; i < 4; i++) {
+		glm::mat4 Mk = Ms;
+		Mk = glm::translate(Mk, wheelPositions[i]);
+		if (i % 2 == 0) {
+			Mk = glm::rotate(Mk, skret, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+		Mk = glm::rotate(Mk, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+		Mk = glm::scale(Mk, glm::vec3(1.5f, 1.5f, 1.5f));
+		createWheelWithSpokes(Mk, wheelAngle, size);
+	}
 
 
 	// small section:
@@ -271,7 +258,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	for (int i = 0; i < 6; i++) {
 		createSmallWheel(Ms, positions[i], skret, wheelAngle, smallsize);
 	}
-
 
 
 	glm::vec3 belka_position_bottom = glm::vec3(-0.15f, 0.6f, 1.21f);
@@ -384,6 +370,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 	// TO DZIAŁA END
 
+
 	// TORY
 	for (int i=0; i<15; i++) {
 		glm::mat4 trackMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(7.0f -i * 0.95f, -1.15f, -0.15f));
@@ -393,7 +380,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		Models::tory.drawSolid(spLambert, "./model/trainTrack2.obj");
 	}
 	
-
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
 	glfwSwapBuffers(window);
@@ -414,6 +400,7 @@ int main(void)
 	Models::walec = Models::Object("./model/walec2.obj"); // walec
 	Models::kolo3 = Models::Object("./model/kolo3.obj"); // walec
 	Models::tory = Models::Object("./model/trainTrack2.obj"); // walec
+
 	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
