@@ -110,30 +110,9 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void createWheelWithSpokes(const glm::mat4& wheelMatrix, float wheelAngle, float size)
 {
 	glm::mat4 scaledWheelMatrix = glm::scale(wheelMatrix, glm::vec3(size));
-
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(scaledWheelMatrix));
+
 	Models::kolo3.drawSolid(spLambert, "./model/kolo3.obj");
-
-	glm::mat4 spokeMatrix1 = wheelMatrix;
-	spokeMatrix1 = glm::rotate(spokeMatrix1, PI / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	spokeMatrix1 = glm::scale(spokeMatrix1, glm::vec3(size * 0.02f, size * 0.02f, size * 0.3f));
-	spokeMatrix1 = glm::translate(spokeMatrix1, glm::vec3(0.0f, 0.0f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(spokeMatrix1));
-	//Models::cube.drawSolid();
-
-	glm::mat4 spokeMatrix2 = wheelMatrix;
-	spokeMatrix2 = glm::rotate(spokeMatrix2, PI / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	spokeMatrix2 = glm::scale(spokeMatrix2, glm::vec3(size * 0.02f, size * 0.02f, size * 0.3f));
-	spokeMatrix2 = glm::translate(spokeMatrix2, glm::vec3(0.0f, 0.0f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(spokeMatrix2));
-	//Models::cube.drawSolid();
-
-	glm::mat4 spokeMatrix3 = wheelMatrix;
-	spokeMatrix3 = glm::rotate(spokeMatrix3, PI / 1.37f, glm::vec3(0.0f, 1.0f, 1.0f)); // TODO
-	spokeMatrix3 = glm::scale(spokeMatrix3, glm::vec3(size * 0.02f, size * 0.02f, size * 0.3f));
-	spokeMatrix3 = glm::translate(spokeMatrix3, glm::vec3(0.0f, 0.0f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(spokeMatrix3));
-	//Models::cube.drawSolid();
 }
 
 void createSmallWheel(const glm::mat4& Ms, const glm::vec3& position, float skret, float wheelAngle, float smallsize)
