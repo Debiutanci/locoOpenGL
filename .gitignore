@@ -1,2 +1,7 @@
 x64/Debug/*
 .vs/*
+*.tlog
+*.exe
+*.ilk
+*.log
+*.pdb
