@@ -281,12 +281,12 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	float smallsize = 1.5;
 
 	glm::vec3 positions[] = {
-		glm::vec3(2.4f, -0.4f, 1.0f),
-		glm::vec3(3.4f, -0.4f, 1.0f),
-		glm::vec3(4.4f, -0.4f, 1.0f),
-		glm::vec3(2.4f, -0.4f, -1.0f),
-		glm::vec3(3.4f, -0.4f, -1.0f),
-		glm::vec3(4.4f, -0.4f, -1.0f)
+		glm::vec3(2.4f, -0.405f, 1.0f),
+		glm::vec3(3.4f, -0.405f, 1.0f),
+		glm::vec3(4.4f, -0.405f, 1.0f),
+		glm::vec3(2.4f, -0.405f, -1.0f),
+		glm::vec3(3.4f, -0.405f, -1.0f),
+		glm::vec3(4.4f, -0.405f, -1.0f)
 	};
 
 	for (int i = 0; i < 6; i++) {
