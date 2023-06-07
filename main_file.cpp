@@ -155,17 +155,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(translationMatrix1));
 	Models::object.drawSolid(spLambert, "./model/cube.obj");
 
-	// Rysowanie podwozia
-	glm::mat4 Mp = glm::scale(Ms, glm::vec3(2.5f, 0.125f, 1.0f));
-	glUniform4f(spLambert->u("color"), 1, 1, 1, 1);
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp));
-	Models::cube.drawSolid();
-
-	// Rysowanie drugiego podwozia
-	glm::mat4 Mp2 = glm::translate(Mp, glm::vec3(0.0f, 7.5f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp2));
-	Models::cube.drawSolid();
-
 	// Rysowanie słupków w narożnikach
 	float poleHeight = 0.47f;  // Wysokość słupka
 	float poleWidth = 0.1f;   // Szerokość słupka
@@ -203,10 +192,10 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	}
 
 	// DUZE
-	glm::mat4 walecMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.55f, 0.5f, 0.0f));
+	glm::mat4 walecMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.1f, 0.5f, 0.0f));
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.8f, 1.0f, 1.8f));
+	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.55f, 1.1f, 1.55f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(walecMatrix));
 	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
@@ -379,6 +368,13 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(trackMatrix));
 		Models::tory.drawSolid(spLambert, "./model/trainTrack2.obj");
 	}
+
+
+	// PODWOZIE
+	glm::mat4 baseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+	baseMatrix = glm::scale(baseMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(baseMatrix));
+	Models::podwozie.drawSolid(spLambert, "./model/base2.obj");
 	
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
@@ -396,10 +392,11 @@ int main(void)
 		fprintf(stderr, "Nie można zainicjować GLFW.\n");
 		exit(EXIT_FAILURE);
 	}
-	Models::belka = Models::Object("./model/belka.obj"); // walec
-	Models::walec = Models::Object("./model/walec2.obj"); // walec
-	Models::kolo3 = Models::Object("./model/kolo3.obj"); // walec
-	Models::tory = Models::Object("./model/trainTrack2.obj"); // walec
+	Models::belka = Models::Object("./model/belka.obj");
+	Models::walec = Models::Object("./model/walec2.obj");
+	Models::kolo3 = Models::Object("./model/kolo3.obj");
+	Models::tory = Models::Object("./model/trainTrack2.obj");
+	Models::podwozie = Models::Object("./model/base2.obj");
 
 	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 

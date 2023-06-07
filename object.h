@@ -40,6 +40,7 @@ namespace Models {
 	extern Object belka;
 	extern Object kolo3;
 	extern Object tory;
+	extern Object podwozie;
 
 }
 
