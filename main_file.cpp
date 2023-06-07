@@ -229,6 +229,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		Mk = glm::scale(Mk, glm::vec3(1.5f, 1.5f, 1.5f));
 		createWheelWithSpokes(Mk, wheelAngle, size);
 
+		// POLACZENIE KOL
 		if (i == 2 || i == 3) {
 			glm::mat4 connector = glm::translate(glm::mat4(1.0f), wheelPositions[i]);
 			connector = glm::rotate(connector, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -237,12 +238,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 			Models::walec.drawSolid(spLambert, "./model/walec.obj");
 		}
 	}
-
-	//glm::mat4 connector = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.05f, -1.0f));
-	//connector = glm::rotate(connector, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//connector = glm::scale(connector, glm::vec3(0.2f, 0.65f, 0.2f));
-	//glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(connector));
-	//Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
 
 	// small section:
@@ -387,15 +382,8 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glm::mat4 baseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
 	baseMatrix = glm::scale(baseMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(baseMatrix));
-	//Models::podwozie.drawSolid(spLambert, "./model/base2.obj");
+	Models::podwozie.drawSolid(spLambert, "./model/base2.obj");
 
-
-	//glm::mat4 connector = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.7f, -1.0f));
-	//connector = glm::rotate(connector, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//connector = glm::scale(connector, glm::vec3(0.2f, 0.65f, 0.2f));
-	//glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(connector));
-	//Models::walec.drawSolid(spLambert, "./model/walec.obj");
-	
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
 	glfwSwapBuffers(window);
