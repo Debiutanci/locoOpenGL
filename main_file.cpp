@@ -43,7 +43,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 float speed = 0; //Prędkość kątowa obrotu obiektu
 float skret = 0; //skret kół
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -7.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 
 float pcpz = 0.0f;
 float pcpx = 0.0f;
@@ -57,36 +57,168 @@ float mcfx = 0.0f;
 
 
 Models::Torus carWheel(0.3, 0.1, 12, 12);
-//Procedura obsługi błędów
+
+
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
 
-//Procedura obsługi klawiatury
+class CameraCore
+{
+public:
+	  float yaw;
+	  float pitch;
+	  glm::vec3 position;
+	  glm::vec3 front;
+	  glm::vec3 up;
+	  glm::vec3 last_up;
+	  bool freeCamera;
+	  float fov;
+	  float aspectRatio;
+	  float nearClip;
+	  float farClip;
+	  float speed;
+	  float rotate;
+	  double last_mouse_x;
+	  double last_mouse_y;
+	  float sensitivity;
+	  bool rotate_l;
+	  bool rotate_r;
+	  bool rotate_u;
+	  bool rotate_d;
+	  bool move_f;
+	  bool move_b;
+	  bool move_l;
+	  bool move_r;
+	  bool move_u;
+	  bool move_d;
+	  CameraCore();
+	  ~CameraCore();
+
+private:
+
+};
+
+CameraCore::CameraCore()
+{
+	this->yaw = 0.0f;
+	this->pitch = 0.0f;
+	this->position = glm::vec3(0.0f, 2.0f, -7.0f);
+	this->front = glm::vec3(0.0f, 0.0f, -1.0f);
+	this->up = glm::vec3(0.0f, 1.0f, 0.0f);
+	this->last_up = glm::vec3(0.0f, 1.0f, 0.0f);
+	this->freeCamera = false;
+	this->fov = 45.0f;
+	this->aspectRatio = 0;
+	this->nearClip = 0.1f;
+	this->farClip = 100.0f;
+	this->speed = 0.10f;
+	this->rotate = 2.50f;
+	this->last_mouse_x = 0.0;
+	this->last_mouse_y = 0.0;
+	this->sensitivity = 0.1f;
+	this->rotate_l = false;
+	this->rotate_r = false;
+	this->rotate_u = false;
+	this->rotate_d = false;
+	this->move_f= false;
+	this->move_b = false;
+	this->move_l = false;
+	this->move_r = false;
+	this->move_u = false;
+	this->move_d = false;
+}
+CameraCore::~CameraCore() {}
+
+bool allow_mouse_collback = false;
+CameraCore *camera = new CameraCore();
+
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
-
-	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_W) pcpz += 0.1f;
-		if (key == GLFW_KEY_S) mcpz -= 0.1f;
-		if (key == GLFW_KEY_A) mcpx -= 0.1f;
-		if (key == GLFW_KEY_D) pcpx += 0.1f;
-		if (key == GLFW_KEY_UP) pcfy += 0.1f;
-		if (key == GLFW_KEY_DOWN) mcfy -= 0.1f;
-		if (key == GLFW_KEY_LEFT) mcfx -= 0.1f;
-		if (key == GLFW_KEY_RIGHT) pcfx += 0.1f;
+	if (key == GLFW_KEY_V) {
+		if (action == GLFW_PRESS) {
+			allow_mouse_collback = true;
+		} else if (action == GLFW_RELEASE) {
+			allow_mouse_collback = false;
+		}
 	}
-
-	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_W) pcpz = 0.0f;
-		if (key == GLFW_KEY_S) mcpz = 0.0f;
-		if (key == GLFW_KEY_A) mcpx = 0.0f;
-		if (key == GLFW_KEY_D) pcpx = 0.0f;
-		if (key == GLFW_KEY_UP) pcfy = 0.0f;
-		if (key == GLFW_KEY_DOWN) mcfy = 0.0f;
-		if (key == GLFW_KEY_LEFT) mcfx = 0.0f;
-		if (key == GLFW_KEY_RIGHT) pcfx = 0.0f;
+	if (key == GLFW_KEY_W) {
+		if (action == GLFW_PRESS) {
+			camera->move_f = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->move_f = false;
+		}
+	} else if (key == GLFW_KEY_S) {
+		if (action == GLFW_PRESS) {
+			camera->move_b = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->move_b = false;
+		}
+	} else if (key == GLFW_KEY_A) {
+		if (action == GLFW_PRESS) {
+			camera->move_l = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->move_l = false;
+		}
+	} else if (key == GLFW_KEY_D) {
+		if (action == GLFW_PRESS) {
+			camera->move_r = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->move_r = false;
+		}
+	} else if (key == GLFW_KEY_SPACE) {
+		if (action == GLFW_PRESS) {
+			camera->move_u = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->move_u = false;
+		}	
 	}
+	else if (key == GLFW_KEY_LEFT_SHIFT) {
+		if (action == GLFW_PRESS) {
+			camera->move_d = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->move_d = false;
+		}	
+	} else if (key == GLFW_KEY_LEFT) {
+		if (action == GLFW_PRESS) {
+			camera->rotate_l = true;
+		}
+		else if (action == GLFW_RELEASE) {
+			camera->rotate_l = false;
+		}	
+	}
+	else if (key == GLFW_KEY_RIGHT) {
+		if (action == GLFW_PRESS) {
+			camera->rotate_r = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->rotate_r = false;
+		}	
+	} else if (key == GLFW_KEY_UP) {
+		if (action == GLFW_PRESS) {
+			camera->rotate_u = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->rotate_u = false;
+		}	
+	}
+	else if (key == GLFW_KEY_DOWN) {
+		if (action == GLFW_PRESS) {
+			camera->rotate_d = true;
+		} else if (action == GLFW_RELEASE) {
+			camera->rotate_d = false;
+		}
+	}
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	double deltaX = xpos - camera->last_mouse_x;
+	double deltaY = ypos - camera->last_mouse_y;
+	if (allow_mouse_collback == true) {
+		camera->yaw += deltaX * camera->sensitivity;
+		camera->pitch -= deltaY * camera->sensitivity;
+	}
+	camera->last_mouse_x = xpos;
+	camera->last_mouse_y = ypos;
 }
 
 
@@ -97,6 +229,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glClearColor(0, 0, 0, 1);//Ustaw czarny kolor czyszczenia ekranu
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości pikseli
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
+	glfwSetCursorPosCallback(window, mouse_callback);
 }
 
 
@@ -127,19 +260,42 @@ void createSmallWheel(const glm::mat4& Ms, const glm::vec3& position, float skre
 int switch_belka = 0;
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAngle) {
-	cameraPos.z += pcpz;
-	cameraPos.z += mcpz;
-	cameraPos.x += mcpx;
-	cameraPos.x += pcpx;
-	cameraFront.y += pcfy;
-	cameraFront.y += mcfy;
-	cameraFront.x += mcfx;
-	cameraFront.x += pcfx;
+	auto oldcameraPosition = camera->position;
+	if (camera->move_f)
+		camera->position += camera->speed * camera->front;
+	if (camera->move_b)
+		camera->position -= camera->speed * camera->front;
+	if (camera->move_l)
+		camera->position -= glm::normalize(glm::cross(camera->front, camera->up)) * camera->speed;
+	if (camera->move_r)
+		camera->position += glm::normalize(glm::cross(camera->front, camera->up)) * camera->speed;
+	if (camera->move_u)
+		camera->position += camera->speed * camera->up;
+	if (camera->move_d)
+		camera->position -= camera->speed * camera->up;
+	if (camera->rotate_l)
+		camera->yaw -= camera->rotate;
+	if (camera->rotate_r)
+		camera->yaw += camera->rotate;
+	if (camera->rotate_u)
+		camera->pitch += camera->rotate;
+	if (camera->rotate_d)
+		camera->pitch -= camera->rotate;
+	if (camera->pitch > 89.0f)
+		camera->pitch = 89.0f;
+	if (camera->pitch < -89.0f)
+		camera->pitch = -89.0f;
+	glm::vec3 front;
+	front.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+	front.y = sin(glm::radians(camera->pitch));
+	front.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+	camera->front = glm::normalize(front);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); // TODO
-	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)); // TODO
-	//glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)); // TODO
+
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
+	glm::mat4 V;
+	V = glm::lookAt(camera->position, camera->position + camera->front, camera->up);
 
 	spLambert->use();//Aktywacja programu cieniującego
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P)); //Załadowanie macierzy rzutowania do programu cieniującego
@@ -401,7 +557,7 @@ int main(void)
 	Models::kolo3 = Models::Object("./model/kolo3.obj"); // walec
 	Models::tory = Models::Object("./model/trainTrack2.obj"); // walec
 
-	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(1200, 1080, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
 	{
