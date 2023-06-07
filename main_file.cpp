@@ -391,7 +391,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glm::mat4 baseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
 	baseMatrix = glm::scale(baseMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(baseMatrix));
-	Models::podwozie.drawSolid(spLambert, "./model/base2.obj");
+	Models::podwozie.drawSolid(spLambert, "./model/base.obj");
 
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
@@ -413,7 +413,7 @@ int main(void)
 	Models::walec = Models::Object("./model/walec2.obj");
 	Models::kolo3 = Models::Object("./model/kolo3.obj");
 	Models::tory = Models::Object("./model/trainTrack2.obj");
-	Models::podwozie = Models::Object("./model/base2.obj");
+	Models::podwozie = Models::Object("./model/base.obj");
 
 	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
