@@ -15,6 +15,7 @@ namespace Models {
 	Object belka;
 	Object kolo3;
 	Object tory;
+	Object podwozie;
 
 	Object::Object() {
 		//init("./model/cube.obj");
