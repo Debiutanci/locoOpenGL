@@ -233,7 +233,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		if (i == 2 || i == 3) {
 			glm::mat4 connector = glm::translate(glm::mat4(1.0f), wheelPositions[i]);
 			connector = glm::rotate(connector, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			connector = glm::scale(connector, glm::vec3(0.2f, 0.65f, 0.2f));
+			connector = glm::scale(connector, glm::vec3(0.25f, 0.65f, 0.25f));
 			glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(connector));
 			Models::walec.drawSolid(spLambert, "./model/walec.obj");
 		}
@@ -254,6 +254,15 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 
 	for (int i = 0; i < 6; i++) {
 		createSmallWheel(Ms, positions[i], skret, wheelAngle, smallsize);
+
+		// POLACZENIE KOL
+		if (i >= 3) {
+			glm::mat4 smallConnector = glm::translate(glm::mat4(1.0f), positions[i]);
+			smallConnector = glm::rotate(smallConnector, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			smallConnector = glm::scale(smallConnector, glm::vec3(0.15f, 0.65f, 0.15f));
+			glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(smallConnector));
+			Models::walec.drawSolid(spLambert, "./model/walec.obj");
+		}
 	}
 
 
