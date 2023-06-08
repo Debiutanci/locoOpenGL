@@ -41,6 +41,7 @@ namespace Models {
 	extern Object kolo3;
 	extern Object tory;
 	extern Object podwozie;
+	extern Object kratka;
 
 }
 
