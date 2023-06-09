@@ -113,7 +113,7 @@ CameraCore::CameraCore()
 	this->nearClip = 0.1f;
 	this->farClip = 100.0f;
 	this->speed = 0.10f;
-	this->rotate = 2.50f;
+	this->rotate = 1.25f;
 	this->last_mouse_x = 0.0;
 	this->last_mouse_y = 0.0;
 	this->sensitivity = 0.1f;
