@@ -221,6 +221,29 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	camera->last_mouse_y = ypos;
 }
 
+GLuint tex;
+GLuint tex1;
+GLuint tex2;
+GLuint tex3;
+GLuint tex4;
+
+GLuint readTexture(const char* filename) {
+    GLuint tex;
+    glActiveTexture(GL_TEXTURE0);
+	std::vector<unsigned char> image;
+    unsigned width, height;
+    unsigned error = lodepng::decode(image, width, height, filename);
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    return tex;
+}
+
 
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
@@ -230,6 +253,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości pikseli
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 	glfwSetCursorPosCallback(window, mouse_callback);
+	tex = readTexture("./dirt.png");
 }
 
 
@@ -504,7 +528,8 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		trackMatrix = glm::rotate(trackMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.50f, 0.0f));
 		trackMatrix = glm::scale(trackMatrix, glm::vec3(1.3f, 1.0f, 1.0f));
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(trackMatrix));
-		Models::tory.drawSolid(spLambert, "./model/trainTrack2.obj");
+		//Models::tory.drawSolid(spLambert, "./model/trainTrack2.obj");
+		Models::tory.drawWithTex(spLambert, tex);
 	}
 
 
@@ -548,7 +573,8 @@ int main(void)
 	Models::belka = Models::Object("./model/belka.obj");
 	Models::walec = Models::Object("./model/walec2.obj");
 	Models::kolo3 = Models::Object("./model/kolo3.obj");
-	Models::tory = Models::Object("./model/trainTrack2.obj");
+	//Models::tory = Models::Object("./model/trainTrack2.obj");
+	Models::tory = Models::Object("./model/trainTrack.obj");
 	Models::podwozie = Models::Object("./model/base.obj");
 	Models::kratka = Models::Object("./model/trainFront.obj");
 	Models::kabina = Models::Object("./model/trainBody1.obj");

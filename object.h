@@ -18,6 +18,12 @@ namespace Models {
 		Object(std::string filename);
 		virtual ~Object();
 		virtual void drawSolid(ShaderProgram* sp, string f);
+		void drawWithTex(ShaderProgram* sp, GLuint texture);
+
+		glm::mat4 M;
+        glm::mat4 V;
+        glm::mat4 P;
+		GLuint texture_map;
 
 	private:
 		vector<vec4> internalVertices;
@@ -32,7 +38,7 @@ namespace Models {
 		vec4 computeFaceNormal(vector<vec4>& face);
 		void generateObjectFace(vector<vec4>& vertices, vector<vec4>& vertexNormals, vec4& faceNormal, float R, float r, float alpha, float beta, float step_alpha, float step_beta);
 		void buildObject(float R, float r, float mainDivs, float tubeDivs);
-
+		
 	};
 
 	extern Object object;
