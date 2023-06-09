@@ -310,44 +310,9 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(translationMatrix1));
 	Models::object.drawSolid(spLambert, "./model/cube.obj");
 
-	// Rysowanie słupków w narożnikach
-	float poleHeight = 0.47f;  // Wysokość słupka
-	float poleWidth = 0.1f;   // Szerokość słupka
-	glm::vec3 poleScale(poleWidth, poleHeight, poleWidth);
-
-	// Współrzędne narożników (przyjmując, że środek podwozia to (0,0,0))
-	glm::vec3 corners[4] = {
-		glm::vec3(1.4f, 0.35f, -0.77f),
-		glm::vec3(1.4f, 0.35f, 0.77f)
-	};
-
-	for (int i = 0; i < 2; i++) {
-		glm::mat4 poleMatrix = glm::translate(Ms, corners[i] + glm::vec3(0.0f, poleHeight / 2, 0.0f));
-		poleMatrix = glm::scale(poleMatrix, poleScale);
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(poleMatrix));
-		Models::cube.drawSolid();
-	}
-
-	// Rysowanie słupków w narożnikach DUZE
-	float poleHeightDuze = 2.0f;  // Wysokość słupka
-	float poleWidthDuze = 0.1f;   // Szerokość słupka
-	glm::vec3 poleScaleDuze(poleWidthDuze, poleHeightDuze, poleWidthDuze);
-
-	// Współrzędne narożników (przyjmując, że środek podwozia to (0,0,0))
-	glm::vec3 cornersduze[4] = {
-		glm::vec3(-1.4f, 0.35f, -0.77f),
-		glm::vec3(-1.4f, 0.35f, 0.77f),
-	};
-
-	for (int i = 0; i < 2; i++) {
-		glm::mat4 poleMatrix = glm::translate(Ms, cornersduze[i] + glm::vec3(0.0f, poleHeightDuze / 2, 0.0f));
-		poleMatrix = glm::scale(poleMatrix, poleScaleDuze);
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(poleMatrix));
-		Models::cube.drawSolid();
-	}
 
 	// DUZE
-	glm::mat4 walecMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.1f, 0.5f, 0.0f));
+	glm::mat4 walecMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.1f, 0.6f, 0.0f));
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.55f, 1.1f, 1.55f));
@@ -550,10 +515,20 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	Models::podwozie.drawSolid(spLambert, "./model/base.obj");
 
 
+	// KRATKA
 	glm::mat4 frontMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.6f, -0.3f, 0.0f));
 	frontMatrix = glm::scale(frontMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(frontMatrix));
 	Models::kratka.drawSolid(spLambert, "./model/trainFront.obj");
+
+
+	// GORA
+	glm::mat4 bodyMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.3, 0.85f, 0.0f));
+	bodyMatrix = glm::scale(bodyMatrix, glm::vec3(7.0f, 3.5f, 2.5f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(bodyMatrix));
+	Models::kabina.drawSolid(spLambert, "./model/trainBody1.obj");
+	Models::dach.drawSolid(spLambert, "./model/trainBody.obj");
+
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
 	glfwSwapBuffers(window);
@@ -576,8 +551,10 @@ int main(void)
 	Models::tory = Models::Object("./model/trainTrack2.obj");
 	Models::podwozie = Models::Object("./model/base.obj");
 	Models::kratka = Models::Object("./model/trainFront.obj");
+	Models::kabina = Models::Object("./model/trainBody1.obj");
+	Models::dach = Models::Object("./model/trainBody.obj");
 
-	window = glfwCreateWindow(1200, 1080, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(1080, 1080, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
 	{
