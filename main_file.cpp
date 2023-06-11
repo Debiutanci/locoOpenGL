@@ -38,9 +38,6 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <assimp/mesh.h>
 #include <string>
 
-// cube
-#include "myCube.h"
-
 
 
 float speed = 0; //Prędkość kątowa obrotu obiektu
@@ -57,9 +54,6 @@ float mcpz = 0.0f;
 float mcpx = 0.0f;
 float mcfy = 0.0f;
 float mcfx = 0.0f;
-
-
-Models::Torus carWheel(0.3, 0.1, 12, 12);
 
 
 void error_callback(int error, const char* description) {
