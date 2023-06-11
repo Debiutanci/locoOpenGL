@@ -38,6 +38,9 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <assimp/mesh.h>
 #include <string>
 
+// cube
+#include "myCube.h"
+
 
 
 float speed = 0; //Prędkość kątowa obrotu obiektu
@@ -221,6 +224,68 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	camera->last_mouse_y = ypos;
 }
 
+GLuint tex;
+GLuint tex1;
+GLuint tex2;
+GLuint tex3;
+GLuint tex4;
+GLuint tex5;
+
+GLuint readTexture(const char* filename) {
+	GLuint tex;
+	glActiveTexture(GL_TEXTURE0);
+
+	//Wczytanie do pamięci komputera
+	std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
+	unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
+	//Wczytaj obrazek
+	unsigned error = lodepng::decode(image, width, height, filename);
+
+	//Import do pamięci karty graficznej
+	glGenTextures(1, &tex); //Zainicjuj jeden uchwyt
+	glBindTexture(GL_TEXTURE_2D, tex); //Uaktywnij uchwyt
+	//Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	return tex;
+}
+
+
+void texKostka(glm::mat4 P, glm::mat4 V, glm::mat4 M, float* vertices, float* tex_cords, float count, GLuint texture, float* normals) {
+
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, vertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spTextured->a("normal"));
+	glVertexAttribPointer(spTextured->a("normal"), 4, GL_FLOAT, false, 0, normals);
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, tex_cords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, count);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
+}
+
 
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
@@ -230,6 +295,12 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości pikseli
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 	glfwSetCursorPosCallback(window, mouse_callback);
+	tex = readTexture("./przod.png");
+	tex1 = readTexture("./dark.png");
+	tex2 = readTexture("./gold.png");
+	tex3 = readTexture("./gold2.png");
+	tex4 = readTexture("./dach.png");
+	tex5 = readTexture("./sky.png");
 }
 
 
@@ -237,23 +308,29 @@ void initOpenGLProgram(GLFWwindow* window) {
 void freeOpenGLProgram(GLFWwindow* window) {
 	freeShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
+	glDeleteTextures(1, &tex);
+	glDeleteTextures(1, &tex1);
+	glDeleteTextures(1, &tex2);
+	glDeleteTextures(1, &tex3);
+	glDeleteTextures(1, &tex4);
+	glDeleteTextures(1, &tex5);
 }
 
 
-void createWheelWithSpokes(const glm::mat4& wheelMatrix, float wheelAngle, float size)
+void createWheelWithSpokes(const glm::mat4& wheelMatrix, float wheelAngle, float size, glm::mat4 P, glm::mat4 V)
 {
 	glm::mat4 scaledWheelMatrix = glm::scale(wheelMatrix, glm::vec3(size));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(scaledWheelMatrix));
-	Models::kolo3.drawSolid(spLambert, "./model/kolo3.obj");
+	texKostka(P, V, scaledWheelMatrix, Models::kolo3.vertices, Models::kolo3.texCoords, Models::kolo3.vertexCount, tex2, Models::kolo3.normals);
 }
 
-void createSmallWheel(const glm::mat4& Ms, const glm::vec3& position, float skret, float wheelAngle, float smallsize)
+void createSmallWheel(const glm::mat4& Ms, const glm::vec3& position, float skret, float wheelAngle, float smallsize, glm::mat4 P, glm::mat4 V)
 {
 	glm::mat4 MkSmall = Ms;
 	MkSmall = glm::translate(MkSmall, position);
 	MkSmall = glm::rotate(MkSmall, skret, glm::vec3(0.0f, 1.0f, 0.0f));
 	MkSmall = glm::rotate(MkSmall, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	createWheelWithSpokes(MkSmall, wheelAngle, smallsize);
+	createWheelWithSpokes(MkSmall, wheelAngle, smallsize, P, V);
 }
 
 int switch_belka = 0;
@@ -292,6 +369,11 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*spTextured->use();
+	glUniform1i(spTextured->u("texture_map"), 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, tex5);*/
+
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
 	glm::mat4 V;
 	V = glm::lookAt(camera->position, camera->position + camera->front, camera->up);
@@ -317,18 +399,18 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	walecMatrix = glm::rotate(walecMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.55f, 1.1f, 1.55f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(walecMatrix));
-	Models::walec.drawSolid(spLambert, "./model/walec.obj");
+	texKostka(P, V, walecMatrix, Models::walec.vertices, Models::walec.texCoords, Models::walec.vertexCount, tex4, Models::walec.normals);
 
 
 	glm::mat4 komin1Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.9f, 0.7f, 0.0f));
 	komin1Matrix = glm::scale(komin1Matrix, glm::vec3(0.7f, 0.7f, 0.7f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(komin1Matrix));
-	Models::walec.drawSolid(spLambert, "./model/walec.obj");
+	texKostka(P, V, komin1Matrix, Models::walec.vertices, Models::walec.texCoords, Models::walec.vertexCount, tex3, Models::walec.normals);
 
 	glm::mat4 komin2Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.7f, 0.7f, 0.0f));
 	komin2Matrix = glm::scale(komin2Matrix, glm::vec3(0.7f, 0.5f, 0.7f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(komin2Matrix));
-	Models::walec.drawSolid(spLambert, "./model/walec.obj");
+	texKostka(P, V, komin2Matrix, Models::walec.vertices, Models::walec.texCoords, Models::walec.vertexCount, tex3, Models::walec.normals);
 
 	float size = 2.2;
 
@@ -348,7 +430,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		}
 		Mk = glm::rotate(Mk, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 		Mk = glm::scale(Mk, glm::vec3(1.5f, 1.5f, 1.5f));
-		createWheelWithSpokes(Mk, wheelAngle, size);
+		createWheelWithSpokes(Mk, wheelAngle, size, P, V);
 
 		// POLACZENIE KOL
 		if (i == 2 || i == 3) {
@@ -374,7 +456,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	};
 
 	for (int i = 0; i < 6; i++) {
-		createSmallWheel(Ms, positions[i], skret, wheelAngle, smallsize);
+		createSmallWheel(Ms, positions[i], skret, wheelAngle, smallsize, P, V);
 
 		// POLACZENIE KOL
 		if (i >= 3) {
@@ -494,7 +576,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	secondBelkaMatrix = glm::translate(secondBelkaMatrix, -belkaCenter);
 	secondBelkaMatrix = glm::scale(secondBelkaMatrix, glm::vec3(0.48f, 0.48f, 0.48f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(secondBelkaMatrix));
-	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 	// TO DZIAŁA END
 
 
@@ -504,7 +585,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		trackMatrix = glm::rotate(trackMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.50f, 0.0f));
 		trackMatrix = glm::scale(trackMatrix, glm::vec3(1.3f, 1.0f, 1.0f));
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(trackMatrix));
-		Models::tory.drawSolid(spLambert, "./model/trainTrack2.obj");
+		texKostka(P, V, trackMatrix, Models::tory.vertices, Models::tory.texCoords, Models::tory.vertexCount, tex4, Models::tory.normals);
 	}
 
 
@@ -512,22 +593,22 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	glm::mat4 baseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
 	baseMatrix = glm::scale(baseMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(baseMatrix));
-	Models::podwozie.drawSolid(spLambert, "./model/base.obj");
+	texKostka(P, V, baseMatrix, Models::podwozie.vertices, Models::podwozie.texCoords, Models::podwozie.vertexCount, tex1, Models::podwozie.normals);
 
 
 	// KRATKA
 	glm::mat4 frontMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.6f, -0.3f, 0.0f));
 	frontMatrix = glm::scale(frontMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(frontMatrix));
-	Models::kratka.drawSolid(spLambert, "./model/trainFront.obj");
+	texKostka(P, V, frontMatrix, Models::kratka.vertices, Models::kratka.texCoords, Models::kratka.vertexCount, tex3, Models::kratka.normals);
 
 
 	// GORA
 	glm::mat4 bodyMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.3, 0.85f, 0.0f));
 	bodyMatrix = glm::scale(bodyMatrix, glm::vec3(7.0f, 3.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(bodyMatrix));
-	Models::kabina.drawSolid(spLambert, "./model/trainBody1.obj");
-	Models::dach.drawSolid(spLambert, "./model/trainBody.obj");
+	texKostka(P, V, bodyMatrix, Models::kabina.vertices, Models::kabina.texCoords, Models::kabina.vertexCount, tex1, Models::kabina.normals);
+	texKostka(P, V, bodyMatrix, Models::dach.vertices, Models::dach.texCoords, Models::dach.vertexCount, tex4, Models::dach.normals);
 
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
@@ -545,8 +626,8 @@ int main(void)
 		fprintf(stderr, "Nie można zainicjować GLFW.\n");
 		exit(EXIT_FAILURE);
 	}
-	Models::belka = Models::Object("./model/belka.obj");
-	Models::walec = Models::Object("./model/walec2.obj");
+	Models::belka = Models::Object("./model/belkaTex.obj");
+	Models::walec = Models::Object("./model/walecTex.obj");
 	Models::kolo3 = Models::Object("./model/kolo3.obj");
 	Models::tory = Models::Object("./model/trainTrack2.obj");
 	Models::podwozie = Models::Object("./model/base.obj");
@@ -554,6 +635,7 @@ int main(void)
 	Models::kabina = Models::Object("./model/trainBody1.obj");
 	Models::dach = Models::Object("./model/trainBody.obj");
 
+	//default
 	window = glfwCreateWindow(1080, 1080, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program

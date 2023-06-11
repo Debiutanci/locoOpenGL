@@ -6,7 +6,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/mesh.h>
-
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Models {
 
@@ -55,7 +58,7 @@ namespace Models {
 
 			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 			{
-				fprintf(stderr, "Nie mo¿na wczytaæ pliku OBJ.\n");
+				fprintf(stderr, "Nie moï¿½na wczytaï¿½ pliku OBJ.\n");
 				exit(EXIT_FAILURE);
 			}
 
@@ -65,7 +68,7 @@ namespace Models {
 				aiMesh* mesh = scene->mMeshes[i];
 				vertices = new float[mesh->mNumVertices*4];
 				normals = new float[mesh->mNumVertices * 4];
-				texCoords = new float[mesh->mNumVertices * 4];
+				texCoords = new float[mesh->mNumVertices * 2];
 				vertexCount = mesh->mNumVertices;
 				
 				for (unsigned int j = 0; j < mesh->mNumVertices; j++)
@@ -94,13 +97,8 @@ namespace Models {
 					if (mesh->HasTextureCoords(0))
 					{
 						aiVector3D texCoord = mesh->mTextureCoords[0][j];
-						glm::vec2 texCoordVec(texCoord.x, texCoord.y);
-						//texCoordVec do tablicy z texCoords
-
-						texCoords[4 * j] = mesh->mTextureCoords[0][j].x;
-						texCoords[4 * j + 1] = mesh->mTextureCoords[0][j].y;
-						texCoords[4 * j + 2] = mesh->mTextureCoords[0][j].z;
-						texCoords[4 * j + 3] = 1.0;
+						texCoords[2 * j] = mesh->mTextureCoords[0][j].x;
+						texCoords[2 * j + 1] = mesh->mTextureCoords[0][j].y;
 					}
 				}
 			}
@@ -197,5 +195,40 @@ namespace Models {
 
 		glDisableVertexAttribArray(sp->a("vertex"));
 		glDisableVertexAttribArray(sp->a("normal"));
+	}
+
+	void Object::drawWithTex(ShaderProgram *sp, GLuint texture, glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+		//init(fn);
+		sp->use();
+
+		glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
+        glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
+        glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
+
+		glEnableVertexAttribArray(sp->a("vertex"));
+		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, vertices);
+
+		glEnableVertexAttribArray(sp->a("normal"));
+		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals);
+
+		glEnableVertexAttribArray(sp->a("texCoord"));
+        glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
+
+		// tex part
+		glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(sp->u("tex"), 0);
+
+        glUniform1i(sp->u("texture_map"), 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture_map);
+
+		/// count
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+		glDisableVertexAttribArray(sp->a("vertex"));
+        glDisableVertexAttribArray(sp->a("normal"));
+        glDisableVertexAttribArray(sp->a("texCoord"));
+        glDisableVertexAttribArray(sp->a("color"));
 	}
 }
