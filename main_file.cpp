@@ -257,65 +257,6 @@ GLuint readTexture(const char* filename) {
 	return tex;
 }
 
-//GLuint readTexture(const char* filename) {
-//    GLuint tex;
-//    glActiveTexture(GL_TEXTURE0);
-//	std::vector<unsigned char> image;
-//    unsigned width, height;
-//    unsigned error = lodepng::decode(image, width, height, filename);
-//    glGenTextures(1, &tex);
-//    glBindTexture(GL_TEXTURE_2D, tex);
-//    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-//    glGenerateMipmap(GL_TEXTURE_2D);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-//    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_MIRRORED_REPEAT);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_MIRRORED_REPEAT);
-//    return tex;
-//}
-
-//GLuint readTexture(const char* filename) {
-//	GLuint tex;
-//	glActiveTexture(GL_TEXTURE0);
-//	std::vector<unsigned char> image;
-//	unsigned width, height;
-//	unsigned error = lodepng::decode(image, width, height, filename);
-//	glGenTextures(1, &tex);
-//	glBindTexture(GL_TEXTURE_2D, tex);
-//	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
-//		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_MIRRORED_REPEAT);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_MIRRORED_REPEAT);
-//
-//	return tex;
-//}
-
-//void texKostka(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-//
-//	spTextured->use(); //Aktywuj program cieniujący
-//
-//	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-//	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-//	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
-//
-//
-//	glEnableVertexAttribArray(spTextured->a("vertex"));
-//	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
-//
-//	glEnableVertexAttribArray(spTextured->a("texCoord"));
-//	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
-//
-//	glActiveTexture(GL_TEXTURE0);
-//	glBindTexture(GL_TEXTURE_2D, tex);
-//	glUniform1i(spTextured->u("tex"), 0);
-//
-//	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
-//
-//	glDisableVertexAttribArray(spTextured->a("vertex"));
-//	glDisableVertexAttribArray(spTextured->a("color"));
-//}
 
 void texKostka(glm::mat4 P, glm::mat4 V, glm::mat4 M, float* vertices, float* tex_cords, float count, GLuint texture, float* normals) {
 
@@ -359,7 +300,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	tex2 = readTexture("./gold.png");
 	tex3 = readTexture("./gold2.png");
 	tex4 = readTexture("./dach.png");
-	tex5 = readTexture("./stone.png");
+	tex5 = readTexture("./sky.png");
 }
 
 
@@ -381,7 +322,6 @@ void createWheelWithSpokes(const glm::mat4& wheelMatrix, float wheelAngle, float
 	glm::mat4 scaledWheelMatrix = glm::scale(wheelMatrix, glm::vec3(size));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(scaledWheelMatrix));
 	texKostka(P, V, scaledWheelMatrix, Models::kolo3.vertices, Models::kolo3.texCoords, Models::kolo3.vertexCount, tex2, Models::kolo3.normals);
-	Models::kolo3.drawSolid(spLambert, "./model/kolo3.obj");
 }
 
 void createSmallWheel(const glm::mat4& Ms, const glm::vec3& position, float skret, float wheelAngle, float smallsize, glm::mat4 P, glm::mat4 V)
@@ -429,6 +369,11 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*spTextured->use();
+	glUniform1i(spTextured->u("texture_map"), 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, tex5);*/
+
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
 	glm::mat4 V;
 	V = glm::lookAt(camera->position, camera->position + camera->front, camera->up);
@@ -455,20 +400,17 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	walecMatrix = glm::scale(walecMatrix, glm::vec3(1.55f, 1.1f, 1.55f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(walecMatrix));
 	texKostka(P, V, walecMatrix, Models::walec.vertices, Models::walec.texCoords, Models::walec.vertexCount, tex4, Models::walec.normals);
-	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
 
 	glm::mat4 komin1Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.9f, 0.7f, 0.0f));
 	komin1Matrix = glm::scale(komin1Matrix, glm::vec3(0.7f, 0.7f, 0.7f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(komin1Matrix));
 	texKostka(P, V, komin1Matrix, Models::walec.vertices, Models::walec.texCoords, Models::walec.vertexCount, tex3, Models::walec.normals);
-	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
 	glm::mat4 komin2Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.7f, 0.7f, 0.0f));
 	komin2Matrix = glm::scale(komin2Matrix, glm::vec3(0.7f, 0.5f, 0.7f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(komin2Matrix));
 	texKostka(P, V, komin2Matrix, Models::walec.vertices, Models::walec.texCoords, Models::walec.vertexCount, tex3, Models::walec.normals);
-	Models::walec.drawSolid(spLambert, "./model/walec.obj");
 
 	float size = 2.2;
 
@@ -644,7 +586,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 		trackMatrix = glm::scale(trackMatrix, glm::vec3(1.3f, 1.0f, 1.0f));
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(trackMatrix));
 		texKostka(P, V, trackMatrix, Models::tory.vertices, Models::tory.texCoords, Models::tory.vertexCount, tex4, Models::tory.normals);
-		Models::tory.drawSolid(spLambert, "");
 	}
 
 
@@ -653,7 +594,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	baseMatrix = glm::scale(baseMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(baseMatrix));
 	texKostka(P, V, baseMatrix, Models::podwozie.vertices, Models::podwozie.texCoords, Models::podwozie.vertexCount, tex1, Models::podwozie.normals);
-	Models::podwozie.drawSolid(spLambert, "./model/base.obj");
 
 
 	// KRATKA
@@ -661,7 +601,6 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	frontMatrix = glm::scale(frontMatrix, glm::vec3(2.0f, 1.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(frontMatrix));
 	texKostka(P, V, frontMatrix, Models::kratka.vertices, Models::kratka.texCoords, Models::kratka.vertexCount, tex3, Models::kratka.normals);
-	Models::kratka.drawSolid(spLambert, "./model/trainFront.obj");
 
 
 	// GORA
@@ -669,9 +608,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	bodyMatrix = glm::scale(bodyMatrix, glm::vec3(7.0f, 3.5f, 2.5f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(bodyMatrix));
 	texKostka(P, V, bodyMatrix, Models::kabina.vertices, Models::kabina.texCoords, Models::kabina.vertexCount, tex1, Models::kabina.normals);
-	Models::kabina.drawSolid(spLambert, "./model/trainBody1.obj");
 	texKostka(P, V, bodyMatrix, Models::dach.vertices, Models::dach.texCoords, Models::dach.vertexCount, tex4, Models::dach.normals);
-	Models::dach.drawSolid(spLambert, "./model/trainBody.obj");
 
 
 	//Skopiowanie bufora ukrytego do widocznego. Z reguły ostatnie polecenie w procedurze drawScene.
@@ -698,6 +635,7 @@ int main(void)
 	Models::kabina = Models::Object("./model/trainBody1.obj");
 	Models::dach = Models::Object("./model/trainBody.obj");
 
+	//default
 	window = glfwCreateWindow(1080, 1080, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
