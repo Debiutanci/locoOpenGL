@@ -289,7 +289,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości pikseli
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 	glfwSetCursorPosCallback(window, mouse_callback);
-	tex = readTexture("./przod.png");
+	//tex = readTexture("./przod.png");
 	tex1 = readTexture("./dark.png");
 	tex2 = readTexture("./gold.png");
 	tex3 = readTexture("./gold2.png");
