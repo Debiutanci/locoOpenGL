@@ -1,22 +1,3 @@
-/*
-Niniejszy program jest wolnym oprogramowaniem; możesz go
-rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
-Licencji Publicznej GNU, wydanej przez Fundację Wolnego
-Oprogramowania - według wersji 2 tej Licencji lub(według twojego
-wyboru) którejś z późniejszych wersji.
-
-Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on
-użyteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyślnej
-gwarancji PRZYDATNOŚCI HANDLOWEJ albo PRZYDATNOŚCI DO OKREŚLONYCH
-ZASTOSOWAŃ.W celu uzyskania bliższych informacji sięgnij do
-Powszechnej Licencji Publicznej GNU.
-
-Z pewnością wraz z niniejszym programem otrzymałeś też egzemplarz
-Powszechnej Licencji Publicznej GNU(GNU General Public License);
-jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
-Place, Fifth Floor, Boston, MA  02110 - 1301  USA
-*/
-
 #define GLM_FORCE_RADIANS
 
 #include <GL/glew.h>
@@ -38,15 +19,10 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <assimp/mesh.h>
 #include <string>
 
-// cube
-#include "myCube.h"
-
-
 
 float speed = 0; //Prędkość kątowa obrotu obiektu
 float skret = 0; //skret kół
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -7.0f);
-//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 
 float pcpz = 0.0f;
 float pcpx = 0.0f;
@@ -57,9 +33,6 @@ float mcpz = 0.0f;
 float mcpx = 0.0f;
 float mcfy = 0.0f;
 float mcfx = 0.0f;
-
-
-Models::Torus carWheel(0.3, 0.1, 12, 12);
 
 
 void error_callback(int error, const char* description) {
@@ -295,7 +268,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości pikseli
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 	glfwSetCursorPosCallback(window, mouse_callback);
-	tex = readTexture("./przod.png");
+	//tex = readTexture("./przod.png");
 	tex1 = readTexture("./dark.png");
 	tex2 = readTexture("./gold.png");
 	tex3 = readTexture("./gold2.png");
@@ -369,6 +342,7 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// Ładowanie tekstury jako światła
 	/*spTextured->use();
 	glUniform1i(spTextured->u("texture_map"), 1);
 	glActiveTexture(GL_TEXTURE1);
@@ -469,22 +443,21 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	}
 
 
-	glm::vec3 belka_position_bottom = glm::vec3(-0.15f, 0.6f, 1.21f);
-	glm::vec3 belka_position_left = glm::vec3(0.5f, -0.0f, 1.21f);
-	glm::vec3 belka_position_top = glm::vec3(-0.2f, -0.6f, 1.21f);
-	glm::vec3 belka_position_right = glm::vec3(-0.7f, -0.0f, 1.21f);
+	glm::vec3 belka_position_bottom = glm::vec3(-0.15f, 0.6f, 1.1f);
+	glm::vec3 belka_position_left = glm::vec3(0.5f, -0.0f, 1.1f);
+	glm::vec3 belka_position_top = glm::vec3(-0.2f, -0.6f, 1.1f);
+	glm::vec3 belka_position_right = glm::vec3(-0.7f, -0.0f, 1.1f);
 	// Obliczanie nowej pozycji belki
 	float belkaRadius = glm::distance(belka_position_top, belka_position_right);
 	glm::vec3 belkaCenter = (belka_position_top + belka_position_right + belka_position_bottom + belka_position_left) / 4.0f;
 	glm::vec3 newBelkaPosition = glm::vec3(
 		belkaCenter.x - belkaRadius * cos(belkaAngle),
 		belkaCenter.y - belkaRadius * sin(belkaAngle),
-		belkaCenter.z
+		belkaCenter.z + 0.04
 	);
 	glm::mat4 belkaMatrix = glm::translate(glm::mat4(1.0f), newBelkaPosition);
 	belkaMatrix = glm::rotate(belkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	//belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));  // TODO poprawić rotację
-	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.48f, 0.48f, 0.48f));
+	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.52f, 0.52f, 0.52f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(belkaMatrix));
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 
@@ -492,91 +465,61 @@ void drawScene(GLFWwindow* window, float angle, float wheelAngle, float belkaAng
 	newBelkaPosition = glm::vec3(
 		belkaCenter.x - belkaRadius * cos(belkaAngle),
 		belkaCenter.y - belkaRadius * sin(belkaAngle),
-		belkaCenter.z - 2.47
+		belkaCenter.z - 2.24
 	);
 	belkaMatrix = glm::translate(glm::mat4(1.0f), newBelkaPosition);
 	belkaMatrix = glm::rotate(belkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));  // TODO poprawić rotację
-	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.48f, 0.48f, 0.48f));
+	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.52f, 0.52f, 0.52f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(belkaMatrix));
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 
 	newBelkaPosition = glm::vec3(
-		belkaCenter.x - belkaRadius/2 * cos(belkaAngle) + 3.9,
-		belkaCenter.y - belkaRadius/2 * sin(belkaAngle) - 0.3,
-		belkaCenter.z - 2.47
+		belkaCenter.x - belkaRadius/2 * cos(belkaAngle) + 4.0,
+		belkaCenter.y - belkaRadius/2 * sin(belkaAngle) - 0.4,
+		belkaCenter.z - 2.18
 	);
 	belkaMatrix = glm::translate(glm::mat4(1.0f), newBelkaPosition);
 	belkaMatrix = glm::rotate(belkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));  // TODO poprawić rotację
+	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
 	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.24f, 0.24f, 0.24f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(belkaMatrix));
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 
 	newBelkaPosition = glm::vec3(
-		belkaCenter.x + belkaRadius / 2 * sin(belkaAngle) + 2.9,
-		belkaCenter.y - belkaRadius / 2 * cos(belkaAngle) - 0.3,
-		belkaCenter.z - 2.47
+		belkaCenter.x + belkaRadius / 2 * sin(belkaAngle) + 3.0,
+		belkaCenter.y - belkaRadius / 2 * cos(belkaAngle) - 0.4,
+		belkaCenter.z - 2.18
 	);
 	belkaMatrix = glm::translate(glm::mat4(1.0f), newBelkaPosition);
 	belkaMatrix = glm::rotate(belkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));  // TODO poprawić rotację
+	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
 	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.24f, 0.24f, 0.24f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(belkaMatrix));
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 
 	newBelkaPosition = glm::vec3(
-		belkaCenter.x - belkaRadius / 2 * cos(belkaAngle) + 3.9,
+		belkaCenter.x - belkaRadius / 2 * cos(belkaAngle) + 4.0,
 		belkaCenter.y - belkaRadius / 2 * sin(belkaAngle) - 0.4,
 		belkaCenter.z
 	);
 	belkaMatrix = glm::translate(glm::mat4(1.0f), newBelkaPosition);
 	belkaMatrix = glm::rotate(belkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));  // TODO poprawić rotację
+	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
 	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.24f, 0.24f, 0.24f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(belkaMatrix));
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
 
 	newBelkaPosition = glm::vec3(
-		belkaCenter.x + belkaRadius / 2 * sin(belkaAngle) + 2.9,
+		belkaCenter.x + belkaRadius / 2 * sin(belkaAngle) + 3.0,
 		belkaCenter.y - belkaRadius / 2 * cos(belkaAngle) - 0.4,
 		belkaCenter.z
 	);
 	belkaMatrix = glm::translate(glm::mat4(1.0f), newBelkaPosition);
 	belkaMatrix = glm::rotate(belkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));  // TODO poprawić rotację
+	belkaMatrix = glm::rotate(belkaMatrix, PI / 1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
 	belkaMatrix = glm::scale(belkaMatrix, glm::vec3(0.24f, 0.24f, 0.24f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(belkaMatrix));
 	Models::belka.drawSolid(spLambert, "./model/belka.obj");
-
-	float belkaLength = 2.0;
-	float belkaAngleInRadians = glm::radians(belkaAngle*50);
-	float modifiedBelkaAngle = belkaAngleInRadians;
-	if (sin(belkaAngleInRadians) >= 0)
-	{
-		modifiedBelkaAngle = belkaAngleInRadians;
-	}
-	else
-	{
-		modifiedBelkaAngle = -belkaAngleInRadians;
-	}
-	glm::mat4 secondBelkaMatrix = glm::mat4(1.0f);
-
-	glm::vec3 newBelka2Position = glm::vec3(
-		belkaCenter.x - belkaRadius*2 * cos(belkaAngle),
-		belkaCenter.y,
-		belkaCenter.z
-	);
-
-	secondBelkaMatrix = glm::translate(secondBelkaMatrix, newBelka2Position);
-	//secondBelkaMatrix = glm::translate(secondBelkaMatrix, glm::vec3(modifiedBelkaAngle, 0.0f, 0.0f)); // TODO fix
-	secondBelkaMatrix = glm::rotate(secondBelkaMatrix, PI / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f));
-	secondBelkaMatrix = glm::rotate(secondBelkaMatrix, PI / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	secondBelkaMatrix = glm::rotate(secondBelkaMatrix, modifiedBelkaAngle, glm::vec3(0.5f, 0.0f, 0.0f));
-	secondBelkaMatrix = glm::translate(secondBelkaMatrix, -belkaCenter);
-	secondBelkaMatrix = glm::scale(secondBelkaMatrix, glm::vec3(0.48f, 0.48f, 0.48f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(secondBelkaMatrix));
-	// TO DZIAŁA END
 
 
 	// TORY
@@ -664,8 +607,8 @@ int main(void)
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
 		angle += speed * glfwGetTime(); //Oblicz przyrost kąta po obrocie
-		wheelAngle += -PI * 2 * glfwGetTime();
-		belkaAngle += -PI * 2 * glfwGetTime();
+		wheelAngle += -PI * 2.2 * glfwGetTime();
+		belkaAngle += -PI * 2.2 * glfwGetTime();
 		glfwSetTime(0); //Wyzeruj timer
 		drawScene(window, angle, wheelAngle, belkaAngle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
