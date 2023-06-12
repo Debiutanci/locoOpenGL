@@ -20,9 +20,6 @@ namespace Models {
 		virtual void drawSolid(ShaderProgram* sp, string f);
 		void drawWithTex(ShaderProgram* sp, GLuint texture, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
-		//glm::mat4 M;
-  //      glm::mat4 V;
-  //      glm::mat4 P;
 		GLuint texture_map;
 
 	private:
